@@ -22,7 +22,7 @@ export function Room() {
   const params = useParams<RoomParams>();
   const roomId = params.id;
 
-  const { user } = useAuth();
+  const { user, signInWithGoogle } = useAuth();
   const { questions, title } = useRoom(roomId || "");
   const { showToast } = useToast();
 
@@ -100,7 +100,8 @@ export function Room() {
               </div>
             ) : (
               <span>
-                Para enviar uma pergunta, <button>faça seu login</button>.
+                Para enviar uma pergunta,{" "}
+                <button onClick={signInWithGoogle}>faça seu login</button>.
               </span>
             )}
             <Button type="submit" disabled={!user}>
