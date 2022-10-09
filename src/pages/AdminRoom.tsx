@@ -12,17 +12,24 @@ import "../styles/room.scss";
 import { Question } from "../components/Question";
 import { useRoom } from "../hooks/useRoom";
 import { database } from "../services/firebase";
+import { Modal } from "../components/Modal";
+import { useState } from "react";
+import { useToast } from "../hooks/useToast";
+import { Trash } from "phosphor-react";
 
 type RoomParams = {
   id: string;
 };
 
 export function AdminRoom() {
+  const [isModelOpen, setIsModalOpen] = useState(false);
+
   const params = useParams<RoomParams>();
   const roomId = params.id;
 
   const { questions, title } = useRoom(roomId || "");
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
   async function handleEndRoom() {
     await database.ref(`rooms/${roomId}`).update({
@@ -45,9 +52,17 @@ export function AdminRoom() {
   }
 
   async function handleDeleteQuestion(questionId: string) {
-    if (window.confirm("Tem certeza que você deseja excluir esta pergunta?")) {
+    try {
       await database.ref(`rooms/${roomId}/questions/${questionId}`).remove();
+    } catch (error) {
+      showToast("Não foi possível remover a pergunta.", "error");
+    } finally {
+      setIsModalOpen(false);
     }
+  }
+
+  function toogleOpenModalDelete() {
+    setIsModalOpen(!isModelOpen);
   }
 
   return (
@@ -96,12 +111,20 @@ export function AdminRoom() {
                   </button>
                 </>
               )}
-              <button
-                type="button"
-                onClick={() => handleDeleteQuestion(question.id)}
-              >
+              <button type="button" onClick={toogleOpenModalDelete}>
                 <img src={deleteImg} alt="Remover pergunta" />
               </button>
+
+              {isModelOpen && (
+                <Modal
+                  title="Excluir pergunta"
+                  description="Tem certeza que você deseja excluir esta pergunta?"
+                  confirm={() => handleDeleteQuestion(question.id)}
+                  cancel={toogleOpenModalDelete}
+                >
+                  <Trash size={48} />
+                </Modal>
+              )}
             </Question>
           ))}
         </div>
