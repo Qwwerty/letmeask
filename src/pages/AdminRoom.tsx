@@ -15,19 +15,22 @@ import { database } from "../services/firebase";
 import { Modal } from "../components/Modal";
 import { useState } from "react";
 import { useToast } from "../hooks/useToast";
-import { Trash } from "phosphor-react";
+import { TrashSimple, XCircle } from "phosphor-react";
 
 type RoomParams = {
   id: string;
 };
 
 export function AdminRoom() {
-  const [isModelOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalCloseQuestions, setIsModalCloseQuestions] = useState(false);
+  const [questionIdDelete, setQuestionIdDelete] = useState("");
 
   const params = useParams<RoomParams>();
   const roomId = params.id;
 
   const { questions, title } = useRoom(roomId || "");
+
   const navigate = useNavigate();
   const { showToast } = useToast();
 
@@ -51,9 +54,11 @@ export function AdminRoom() {
     });
   }
 
-  async function handleDeleteQuestion(questionId: string) {
+  async function handleDeleteQuestion() {
     try {
-      await database.ref(`rooms/${roomId}/questions/${questionId}`).remove();
+      await database
+        .ref(`rooms/${roomId}/questions/${questionIdDelete}`)
+        .remove();
     } catch (error) {
       showToast("Não foi possível remover a pergunta.", "error");
     } finally {
@@ -61,8 +66,9 @@ export function AdminRoom() {
     }
   }
 
-  function toogleOpenModalDelete() {
-    setIsModalOpen(!isModelOpen);
+  function openModalDelete(questionId: string) {
+    setIsModalOpen(!isModalOpen);
+    setQuestionIdDelete(questionId);
   }
 
   return (
@@ -73,7 +79,7 @@ export function AdminRoom() {
 
           <div>
             <RoomCode code={roomId} />
-            <Button isOutlined onClick={handleEndRoom}>
+            <Button isOutlined onClick={() => setIsModalCloseQuestions(true)}>
               Encerrar sala
             </Button>
           </div>
@@ -111,22 +117,38 @@ export function AdminRoom() {
                   </button>
                 </>
               )}
-              <button type="button" onClick={toogleOpenModalDelete}>
+              <button
+                type="button"
+                onClick={() => openModalDelete(question.id)}
+              >
                 <img src={deleteImg} alt="Remover pergunta" />
               </button>
-
-              {isModelOpen && (
-                <Modal
-                  title="Excluir pergunta"
-                  description="Tem certeza que você deseja excluir esta pergunta?"
-                  confirm={() => handleDeleteQuestion(question.id)}
-                  cancel={toogleOpenModalDelete}
-                >
-                  <Trash size={48} />
-                </Modal>
-              )}
             </Question>
           ))}
+
+          {isModalOpen && (
+            <Modal
+              title="Excluir pergunta"
+              description="Tem certeza que você deseja excluir esta pergunta?"
+              confirmText="Sim, excluir"
+              confirm={handleDeleteQuestion}
+              cancel={() => setIsModalOpen(false)}
+            >
+              <TrashSimple />
+            </Modal>
+          )}
+
+          {isModalCloseQuestions && (
+            <Modal
+              title="Encerrar sala"
+              description="Tem certeza que você deseja encerrar esta sala?"
+              confirmText="Sim, encerrar"
+              confirm={handleEndRoom}
+              cancel={() => setIsModalCloseQuestions(false)}
+            >
+              <XCircle />
+            </Modal>
+          )}
         </div>
       </main>
     </div>

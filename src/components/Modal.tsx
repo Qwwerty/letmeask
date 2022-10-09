@@ -1,28 +1,38 @@
-import '../styles/modal.scss';
-import { Button } from './Button';
+import "../styles/modal.scss";
+import { Button } from "./Button";
 
 interface ModalProps {
   title: string;
   description: string;
+  confirmText?: string;
+  cancelText?: string;
   confirm: () => void;
   cancel: () => void;
   children: React.ReactNode;
 }
 
-export function Modal({ title, description, confirm, cancel, children }: ModalProps) {
+export function Modal({
+  title,
+  description,
+  confirmText = "Confirmar",
+  cancelText = "Cancelar",
+  confirm,
+  cancel,
+  children,
+}: ModalProps) {
   return (
     <div className="modal">
-      <div className='wrapper'>
+      <div className="wrapper">
         {children}
 
         <p>{title}</p>
         <span>{description}</span>
 
-        <div className='actions'>
-          <Button onClick={cancel}>Cancelar</Button>
-          <Button onClick={confirm}>Sim, encerrar</Button>
+        <div className="actions">
+          <Button onClick={cancel}>{cancelText}</Button>
+          <Button onClick={confirm}>{confirmText}</Button>
         </div>
       </div>
     </div>
-  )
+  );
 }
