@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { database } from "../services/firebase";
 import { useAuth } from "./useAuth";
+import { useNavigate } from "react-router";
 
 type FirebaseQuestions = Record<
   string,
@@ -34,16 +35,31 @@ type QuestionType = {
   likeId: string | undefined;
 };
 
+type FirebaseRoom = {
+  authorId: string;
+  title: string;
+  endedAt: string;
+  questions: FirebaseQuestions;
+};
+
 export function useRoom(roomId: string) {
-  const { user } = useAuth();
   const [questions, setQuestions] = useState<QuestionType[]>([]);
   const [title, setTitle] = useState("");
+
+  const { user } = useAuth();
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     const roomRef = database.ref(`rooms/${roomId}`);
 
     roomRef.on("value", (room) => {
-      const databaseRoom = room.val();
+      const databaseRoom: FirebaseRoom = room.val();
+
+      if (databaseRoom.endedAt) {
+        navigate('/')
+        return;
+      }
+
       const firebaseQuestions: FirebaseQuestions = databaseRoom.questions ?? {};
 
       const parsedQuestions = Object.entries(firebaseQuestions).map(
