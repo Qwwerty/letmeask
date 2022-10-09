@@ -1,0 +1,75 @@
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+
+  background-color: #050206;
+  background-color: rgba(0, 0, 0, 0.9);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .wrapper {
+    background: #F8F8F8;
+    border-radius: 8px;
+
+    height: 362px;
+
+    padding: 4rem 7.625rem;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    svg {
+      color: #E73F5D;
+      width: 3rem;
+      height: 3rem;
+    }
+
+    p {
+      margin-top: 1.5rem;
+
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      font-size: 1.5rem;
+      line-height: 2.125rem;
+      color: #29292E;
+    }
+
+    span {
+      margin-top: 0.75rem; 
+
+      font-size: 1rem;
+      line-height: 1.625rem;
+      color: #737380;
+    }
+
+    .actions {
+      margin-top: 2.5625rem;
+
+      display: flex;
+      gap: 0.5rem;
+
+      button:first-child {
+        background: #DBDCDD;
+        color: #737380;
+        font-size: 1rem;
+        font-weight: 500;
+      }
+
+      button:last-child {
+        background: #E73F5D;
+        color: #FEFEFE;
+        font-size: 1rem;
+        font-weight: 500;
+      }
+    }
+  }
+}
