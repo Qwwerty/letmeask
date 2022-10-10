@@ -1,8 +1,12 @@
 {
   "name": "letmeask",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "author": {
+   "name": "Rhalf Oliveira",
+   "email": "rhalfsouza@hotmail.com"
+  },
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "tsc && vite build",
