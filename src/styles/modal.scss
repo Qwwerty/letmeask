@@ -73,3 +73,11 @@
     }
   }
 }
+
+@media (max-width: 425px) {
+  .modal {
+    .wrapper {
+      padding: 4rem 1.625rem;
+    }
+  }
+}
