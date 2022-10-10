@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 
 import { Button } from "../components/Button";
 import { RoomCode } from "../components/RoomCode";
+import { EmptyState } from "../components/EmptyState";
 
 import logoImg from "../assets/images/logo.svg";
 import deleteImg from "../assets/images/delete.svg";
@@ -92,64 +93,71 @@ export function AdminRoom() {
           {questions.length > 0 && <span>{questions.length} perguntas</span>}
         </div>
 
-        <div className="question-list">
-          {questions.map((question) => (
-            <Question
-              key={question.id}
-              content={question.content}
-              author={question.author}
-              isAnswered={question.isAnswered}
-              isHighlighted={question.isHighlighted}
-            >
-              {!question.isAnswered && (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => handleCheckQuestionAsAnswered(question.id)}
-                  >
-                    <img src={checkImg} alt="Marcar pergunta como respondida" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleHighlightQuestion(question.id)}
-                  >
-                    <img src={answerImg} alt="Dar destaque à pergunta" />
-                  </button>
-                </>
-              )}
-              <button
-                type="button"
-                onClick={() => openModalDelete(question.id)}
+        {questions.length > 0 ? (
+          <div className="question-list">
+            {questions.map((question) => (
+              <Question
+                key={question.id}
+                content={question.content}
+                author={question.author}
+                isAnswered={question.isAnswered}
+                isHighlighted={question.isHighlighted}
               >
-                <img src={deleteImg} alt="Remover pergunta" />
-              </button>
-            </Question>
-          ))}
+                {!question.isAnswered && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => handleCheckQuestionAsAnswered(question.id)}
+                    >
+                      <img
+                        src={checkImg}
+                        alt="Marcar pergunta como respondida"
+                      />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleHighlightQuestion(question.id)}
+                    >
+                      <img src={answerImg} alt="Dar destaque à pergunta" />
+                    </button>
+                  </>
+                )}
+                <button
+                  type="button"
+                  onClick={() => openModalDelete(question.id)}
+                >
+                  <img src={deleteImg} alt="Remover pergunta" />
+                </button>
+              </Question>
+            ))}
 
-          {isModalOpen && (
-            <Modal
-              title="Excluir pergunta"
-              description="Tem certeza que você deseja excluir esta pergunta?"
-              confirmText="Sim, excluir"
-              confirm={handleDeleteQuestion}
-              cancel={() => setIsModalOpen(false)}
-            >
-              <TrashSimple />
-            </Modal>
-          )}
+            {isModalOpen && (
+              <Modal
+                title="Excluir pergunta"
+                description="Tem certeza que você deseja excluir esta pergunta?"
+                confirmText="Sim, excluir"
+                confirm={handleDeleteQuestion}
+                cancel={() => setIsModalOpen(false)}
+              >
+                <TrashSimple />
+              </Modal>
+            )}
 
-          {isModalCloseQuestions && (
-            <Modal
-              title="Encerrar sala"
-              description="Tem certeza que você deseja encerrar esta sala?"
-              confirmText="Sim, encerrar"
-              confirm={handleEndRoom}
-              cancel={() => setIsModalCloseQuestions(false)}
-            >
-              <XCircle />
-            </Modal>
-          )}
-        </div>
+            {isModalCloseQuestions && (
+              <Modal
+                title="Encerrar sala"
+                description="Tem certeza que você deseja encerrar esta sala?"
+                confirmText="Sim, encerrar"
+                confirm={handleEndRoom}
+                cancel={() => setIsModalCloseQuestions(false)}
+              >
+                <XCircle />
+              </Modal>
+            )}
+          </div>
+        ) : (
+          <EmptyState />
+        )}
       </main>
     </div>
   );
