@@ -47,16 +47,26 @@ export function useRoom(roomId: string) {
   const [title, setTitle] = useState("");
 
   const { user } = useAuth();
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   useEffect(() => {
     const roomRef = database.ref(`rooms/${roomId}`);
 
+    if (!roomRef) {
+      navigate("/");
+      return;
+    }
+
     roomRef.on("value", (room) => {
       const databaseRoom: FirebaseRoom = room.val();
 
+      if (!databaseRoom) {
+        navigate("/");
+        return;
+      }
+
       if (databaseRoom.endedAt) {
-        navigate('/')
+        navigate("/");
         return;
       }
 
