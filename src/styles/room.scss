@@ -139,3 +139,13 @@
     }
   }
 }
+
+@media (max-width: 425px) {
+  #page-room {
+    main {
+      span {
+        text-align: center;
+      }
+    }
+  }
+}
