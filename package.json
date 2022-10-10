@@ -1,10 +1,14 @@
 {
   "name": "letmeask",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "author": {
+   "name": "Rhalf Oliveira",
+   "email": "rhalfsouza@hotmail.com"
+  },
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host 0.0.0.0",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
@@ -12,6 +16,7 @@
     "classnames": "^2.3.2",
     "firebase": "8.6.8",
     "node-sass": "^5.0.0",
+    "phosphor-react": "^1.4.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.4.0",
