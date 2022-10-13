@@ -14,9 +14,10 @@ import { Question } from "../components/Question";
 import { useRoom } from "../hooks/useRoom";
 import { database } from "../services/firebase";
 import { Modal } from "../components/Modal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useToast } from "../hooks/useToast";
 import { TrashSimple, XCircle } from "phosphor-react";
+import { useAuth } from "../hooks/useAuth";
 
 type RoomParams = {
   id: string;
@@ -31,10 +32,11 @@ export function AdminRoom() {
   const params = useParams<RoomParams>();
   const roomId = params.id;
 
-  const { questions, title } = useRoom(roomId || "");
+  const { questions, title, roomOwnerId } = useRoom(roomId || "");
 
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { user } = useAuth();
 
   async function handleEndRoom() {
     await database.ref(`rooms/${roomId}`).update({
@@ -74,6 +76,13 @@ export function AdminRoom() {
     setIsModalOpen(!isModalOpen);
     setQuestionIdDelete(questionId);
   }
+
+  useEffect(() => {
+    if (roomOwnerId !== user?.id) {
+      navigate(`/rooms/${roomId}`);
+      return;
+    }
+  }, []);
 
   return (
     <div id="page-room">

@@ -45,6 +45,7 @@ type FirebaseRoom = {
 export function useRoom(roomId: string) {
   const [questions, setQuestions] = useState<QuestionType[]>([]);
   const [title, setTitle] = useState("");
+  const [roomOwnerId, setRoomOwnerId] = useState("");
 
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -90,6 +91,7 @@ export function useRoom(roomId: string) {
 
       setTitle(databaseRoom.title);
       setQuestions(parsedQuestions);
+      setRoomOwnerId(databaseRoom.authorId)
     });
 
     return () => {
@@ -100,5 +102,6 @@ export function useRoom(roomId: string) {
   return {
     questions,
     title,
+    roomOwnerId
   };
 }
