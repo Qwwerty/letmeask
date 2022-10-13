@@ -24,7 +24,8 @@ type RoomParams = {
 
 export function AdminRoom() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isModalCloseQuestions, setIsModalCloseQuestions] = useState(false);
+  const [isModalQuestionClosedOpen, setIsModalQuestionClosedOpen] =
+    useState(false);
   const [questionIdDelete, setQuestionIdDelete] = useState("");
 
   const params = useParams<RoomParams>();
@@ -39,6 +40,8 @@ export function AdminRoom() {
     await database.ref(`rooms/${roomId}`).update({
       endedAt: new Date(),
     });
+
+    setIsModalQuestionClosedOpen(false);
 
     navigate("/");
   }
@@ -80,7 +83,10 @@ export function AdminRoom() {
 
           <div>
             <RoomCode code={roomId} />
-            <Button isOutlined onClick={() => setIsModalCloseQuestions(true)}>
+            <Button
+              isOutlined
+              onClick={() => setIsModalQuestionClosedOpen(true)}
+            >
               Encerrar sala
             </Button>
           </div>
@@ -142,21 +148,21 @@ export function AdminRoom() {
                 <TrashSimple />
               </Modal>
             )}
-
-            {isModalCloseQuestions && (
-              <Modal
-                title="Encerrar sala"
-                description="Tem certeza que você deseja encerrar esta sala?"
-                confirmText="Sim, encerrar"
-                confirm={handleEndRoom}
-                cancel={() => setIsModalCloseQuestions(false)}
-              >
-                <XCircle />
-              </Modal>
-            )}
           </div>
         ) : (
           <EmptyState />
+        )}
+
+        {isModalQuestionClosedOpen && (
+          <Modal
+            title="Encerrar sala"
+            description="Tem certeza que você deseja encerrar esta sala?"
+            confirmText="Sim, encerrar"
+            confirm={handleEndRoom}
+            cancel={() => setIsModalQuestionClosedOpen(false)}
+          >
+            <XCircle />
+          </Modal>
         )}
       </main>
     </div>
