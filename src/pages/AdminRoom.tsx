@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 
 import { Button } from "../components/Button";
 import { RoomCode } from "../components/RoomCode";
+import { EmptyState } from "../components/EmptyState";
 
 import logoImg from "../assets/images/logo.svg";
 import deleteImg from "../assets/images/delete.svg";
@@ -13,9 +14,10 @@ import { Question } from "../components/Question";
 import { useRoom } from "../hooks/useRoom";
 import { database } from "../services/firebase";
 import { Modal } from "../components/Modal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useToast } from "../hooks/useToast";
 import { TrashSimple, XCircle } from "phosphor-react";
+import { useAuth } from "../hooks/useAuth";
 
 type RoomParams = {
   id: string;
@@ -23,21 +25,25 @@ type RoomParams = {
 
 export function AdminRoom() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isModalCloseQuestions, setIsModalCloseQuestions] = useState(false);
+  const [isModalQuestionClosedOpen, setIsModalQuestionClosedOpen] =
+    useState(false);
   const [questionIdDelete, setQuestionIdDelete] = useState("");
 
   const params = useParams<RoomParams>();
   const roomId = params.id;
 
-  const { questions, title } = useRoom(roomId || "");
+  const { questions, title, roomOwnerId } = useRoom(roomId || "");
 
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { user } = useAuth();
 
   async function handleEndRoom() {
     await database.ref(`rooms/${roomId}`).update({
       endedAt: new Date(),
     });
+
+    setIsModalQuestionClosedOpen(false);
 
     navigate("/");
   }
@@ -71,6 +77,13 @@ export function AdminRoom() {
     setQuestionIdDelete(questionId);
   }
 
+  useEffect(() => {
+    if (roomOwnerId !== user?.id) {
+      navigate(`/rooms/${roomId}`);
+      return;
+    }
+  }, []);
+
   return (
     <div id="page-room">
       <header>
@@ -79,7 +92,10 @@ export function AdminRoom() {
 
           <div>
             <RoomCode code={roomId} />
-            <Button isOutlined onClick={() => setIsModalCloseQuestions(true)}>
+            <Button
+              isOutlined
+              onClick={() => setIsModalQuestionClosedOpen(true)}
+            >
               Encerrar sala
             </Button>
           </div>
@@ -92,64 +108,71 @@ export function AdminRoom() {
           {questions.length > 0 && <span>{questions.length} perguntas</span>}
         </div>
 
-        <div className="question-list">
-          {questions.map((question) => (
-            <Question
-              key={question.id}
-              content={question.content}
-              author={question.author}
-              isAnswered={question.isAnswered}
-              isHighlighted={question.isHighlighted}
-            >
-              {!question.isAnswered && (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => handleCheckQuestionAsAnswered(question.id)}
-                  >
-                    <img src={checkImg} alt="Marcar pergunta como respondida" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleHighlightQuestion(question.id)}
-                  >
-                    <img src={answerImg} alt="Dar destaque à pergunta" />
-                  </button>
-                </>
-              )}
-              <button
-                type="button"
-                onClick={() => openModalDelete(question.id)}
+        {questions.length > 0 ? (
+          <div className="question-list">
+            {questions.map((question) => (
+              <Question
+                key={question.id}
+                content={question.content}
+                author={question.author}
+                isAnswered={question.isAnswered}
+                isHighlighted={question.isHighlighted}
               >
-                <img src={deleteImg} alt="Remover pergunta" />
-              </button>
-            </Question>
-          ))}
+                {!question.isAnswered && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => handleCheckQuestionAsAnswered(question.id)}
+                    >
+                      <img
+                        src={checkImg}
+                        alt="Marcar pergunta como respondida"
+                      />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleHighlightQuestion(question.id)}
+                    >
+                      <img src={answerImg} alt="Dar destaque à pergunta" />
+                    </button>
+                  </>
+                )}
+                <button
+                  type="button"
+                  onClick={() => openModalDelete(question.id)}
+                >
+                  <img src={deleteImg} alt="Remover pergunta" />
+                </button>
+              </Question>
+            ))}
 
-          {isModalOpen && (
-            <Modal
-              title="Excluir pergunta"
-              description="Tem certeza que você deseja excluir esta pergunta?"
-              confirmText="Sim, excluir"
-              confirm={handleDeleteQuestion}
-              cancel={() => setIsModalOpen(false)}
-            >
-              <TrashSimple />
-            </Modal>
-          )}
+            {isModalOpen && (
+              <Modal
+                title="Excluir pergunta"
+                description="Tem certeza que você deseja excluir esta pergunta?"
+                confirmText="Sim, excluir"
+                confirm={handleDeleteQuestion}
+                cancel={() => setIsModalOpen(false)}
+              >
+                <TrashSimple />
+              </Modal>
+            )}
+          </div>
+        ) : (
+          <EmptyState />
+        )}
 
-          {isModalCloseQuestions && (
-            <Modal
-              title="Encerrar sala"
-              description="Tem certeza que você deseja encerrar esta sala?"
-              confirmText="Sim, encerrar"
-              confirm={handleEndRoom}
-              cancel={() => setIsModalCloseQuestions(false)}
-            >
-              <XCircle />
-            </Modal>
-          )}
-        </div>
+        {isModalQuestionClosedOpen && (
+          <Modal
+            title="Encerrar sala"
+            description="Tem certeza que você deseja encerrar esta sala?"
+            confirmText="Sim, encerrar"
+            confirm={handleEndRoom}
+            cancel={() => setIsModalQuestionClosedOpen(false)}
+          >
+            <XCircle />
+          </Modal>
+        )}
       </main>
     </div>
   );

@@ -29,6 +29,8 @@
     max-width: 800px;
     margin: 0 auto;
 
+    padding-bottom: 2rem;
+
     .room-title {
       margin: 32px 0 24px;
       display: flex;
@@ -110,6 +112,10 @@
       margin-top: 32px;
     }
   }
+
+  #empty-state {
+    margin-top: 10.25rem;
+  }
 }
 
 @media (max-width: 768px) {
@@ -146,6 +152,10 @@
       span {
         text-align: center;
       }
+    }
+
+    #empty-state {
+      margin-top: 5.25rem;
     }
   }
 }

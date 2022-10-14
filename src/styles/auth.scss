@@ -146,8 +146,21 @@
 
 @media (max-width: 1024px) {
   #page-auth {
+    flex-direction: column;
+
     aside {
-      display: none;
+      padding: 2rem;
+      border-radius: 0 0 8px 8px;
+
+      margin-bottom: 2rem;
+
+      img {
+        display: none;
+      }
+    }
+
+    main {
+      margin-bottom: 2rem;
     }
   }
 }
