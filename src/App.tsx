@@ -18,6 +18,7 @@ function App() {
             <Route path='/rooms/:id' element={<Room />} />
 
             <Route path='admin/rooms/:id' element={<AdminRoom />} />
+            <Route path='*' element={<Home />} />
           </Routes>
         </AuthContextProvider>
       </ToastProvider>
